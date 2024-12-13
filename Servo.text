@@ -1,0 +1,51 @@
+#include <Servo.h>
+
+#define LDR1_PIN A0
+#define LDR2_PIN A1
+#define LDR3_PIN A2
+#define LDR4_PIN A3
+
+#define SERVO_H_PIN 9
+#define SERVO_V_PIN 10
+
+Servo servoH;
+Servo servoV;
+
+int LDR1_val, LDR2_val, LDR3_val, LDR4_val;
+int servoH_pos = 90;
+int servoV_pos = 90;
+
+void setup() {
+  servoH.attach(SERVO_H_PIN);
+  servoV.attach(SERVO_V_PIN);
+
+  servoH.write(servoH_pos);
+  servoV.write(servoV_pos);
+}
+
+void loop() {
+  // Read LDR values
+  LDR1_val = analogRead(LDR1_PIN);
+  LDR2_val = analogRead(LDR2_PIN);
+  LDR3_val = analogRead(LDR3_PIN);
+  LDR4_val = analogRead(LDR4_PIN);
+
+  
+  int diffH = (LDR1_val + LDR2_val) - (LDR3_val + LDR4_val);
+  int diffV = (LDR1_val + LDR3_val) - (LDR2_val + LDR4_val);
+
+  
+  if (abs(diffH) > 10) {
+    servoH_pos += diffH / 10;
+    servoH_pos = constrain(servoH_pos, 0, 180);
+    servoH.write(servoH_pos);
+  }
+
+  if (abs(diffV) > 10) {
+    servoV_pos += diffV / 10;
+    servoV_pos = constrain(servoV_pos, 0, 180);
+    servoV.write(servoV_pos);
+  }
+
+  delay(100); 
+}
