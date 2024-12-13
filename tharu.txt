@@ -1,0 +1,48 @@
+#include <DHT.h>
+
+#define PIR_PIN 2
+#define LED_PIN 13
+#define FAN_PIN 12
+#define ALARM_PIN 11
+#define DHT_PIN 7
+
+DHT dht(DHT_PIN, DHT11);
+
+int PIR_state = 0;
+int temp_threshold = 30; // Adjust as needed
+
+void setup() {
+  pinMode(PIR_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(FAN_PIN, OUTPUT);
+  pinMode(ALARM_PIN, OUTPUT);
+
+  dht.begin();
+}
+
+void loop() {
+  PIR_state = digitalRead(PIR_PIN);
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (PIR_state == HIGH) {
+    digitalWrite(LED_PIN, HIGH); // Turn on lights
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+
+  if (t > temp_threshold) {
+    digitalWrite(FAN_PIN, HIGH); // Turn on fan
+  } else {
+    digitalWrite(FAN_PIN, LOW);
+  }
+
+  if (t > temp_threshold && PIR_state == HIGH) {
+    digitalWrite(ALARM_PIN, HIGH); // Activate alarm
+  } else {
+    digitalWrite(ALARM_PIN, LOW);
+  }
+
+  delay(1000);
+}
